@@ -1,0 +1,17 @@
+# Setup Data Node
+
+---
+ - hosts: datanode
+   become: true
+   vars:
+     ansible_become_pass: root
+     manage: 192.168.56.8
+   tasks:
+   - name: Create the configuration file in /etc directory with my.cnf as its name
+     template:
+       src: /home/gslab/my.j2
+       dest: /etc/my.cnf
+   - name: create the new directory for the database data
+     command: mkdir -p /var/lib/mysql-cluster
+   - name: Start the data node
+     command: ndbd

@@ -1,0 +1,17 @@
+# Setup Data Node
+
+---
+ - hosts: mysqlnode
+   become: true
+   vars:
+     ansible_become_pass: root
+     manage: 192.168.56.8
+   tasks:
+   - name: Create the configuration file in /etc directory with my.cnf as its name
+     template:
+       src: /home/gslab/Documents/my.j2
+       dest: /etc/my.cnf
+   - name: Start the SQL Node by starting the MySQL server
+     service:
+       name: mysql
+       state: started

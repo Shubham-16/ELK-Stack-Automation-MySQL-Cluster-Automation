@@ -1,0 +1,36 @@
+# Installation of MySQL Cluster on each node
+---
+ - hosts: mysql-cluster
+   become: true
+   vars:
+     ansible_become_pass: root
+   tasks:
+   - name: Upgrade all package
+     yum:
+       name: '*'
+       state: latest
+   - name: Download the mysql cluster software
+     unarchive:
+       src: http://dev.mysql.com/get/Downloads/MySQL-Cluster-7.4/MySQL-Cluster-gpl-7.4.10-1.el7.x86_64.rpm-bundle.tar
+       dest: /
+       remote_src: yes
+   - name: Install perl-Data-Dumper
+     yum:
+       name: perl-Data-Dumper
+       state: latest
+   - name: Remove mariadb libraries
+     yum: 
+       name: mariadb-libs
+       state: absent
+   - name: Install the cluster client bundle
+     yum:
+       name: /MySQL-Cluster-client-gpl-7.4.10-1.el7.x86_64.rpm
+       state: present
+   - name: Install the cluster server bundle
+     yum:
+       name: /MySQL-Cluster-server-gpl-7.4.10-1.el7.x86_64.rpm
+       state: present
+   - name: Install the cluster shared bundle
+     yum:
+       name: /MySQL-Cluster-shared-gpl-7.4.10-1.el7.x86_64.rpm
+       state: present
