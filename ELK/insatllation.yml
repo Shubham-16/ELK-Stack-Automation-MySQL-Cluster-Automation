@@ -1,0 +1,78 @@
+---
+ - hosts: managenode
+   tasks:
+     - name: Install Java
+       yum:
+         name: java-openjdk
+         state: present
+         
+     - name: Add ELK Repository
+       copy:
+          src: /home/gslab/ELK/elasticsearch.repo
+          dest: /etc/yum.repos.d/elasticsearch.repo
+     
+
+     - name: Import GPG Key
+       rpm_key:
+           state: present
+           key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+     
+     - name: Install Elastic Search
+       yum:
+          name: elasticsearch
+          state: present
+
+     - name: Start elasticsearch service on boot
+       service: 
+            name: elasticsearch
+            state: started
+
+     - name: enable elasticsearch service on boot
+       service: 
+            name: elasticsearch
+            enabled: yes
+
+     - name: Install Kibana
+       yum:
+          name: kibana
+          state: present
+       
+     - name: Start kibana Service
+       service:
+             name: kibana
+             state: started
+     
+     - name: Allow the TCP Port 5601
+       firewalld:
+            port: 5601/tcp
+            permanent: yes
+            state: enabled
+     
+     - name: Reload the firewall
+       service: 
+            name: firewalld
+            state: reloaded
+    
+     - name: Install LogStash
+       yum:
+          name: logstash
+          state: present
+      
+     - name: Copy the configuration file
+       copy:
+           src: /home/gslab/ELK/conf.d
+           dest: /etc/logstash/conf.d
+
+     - name: Install Other ELK tools
+       yum:
+          name: "{{ item }}"
+          state: present
+       loop:
+            - filebeat
+            - auditbeat
+            - metricbeat
+            - packetbeat
+            - heartbeat-elastic
+
+
+  
